@@ -243,8 +243,9 @@ public class AuthenticationGUI extends JFrame {
     private void openMainInterface(String username) {
         // Crear usuario ficticio para el ejemplo
         User currentUser = new User(username, "temp", new Date());
-        RedSocialGUI mainGUI = new RedSocialGUI(currentUser);
-        mainGUI.setVisible(true);
+
+        Menu mainMenu = new Menu(currentUser);
+        mainMenu.setVisible(true);
         this.dispose();
     }
 }
