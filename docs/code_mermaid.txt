@@ -1,0 +1,168 @@
+classDiagram
+    class ConnectHub {
+        -AuthenticationService authService
+        -List~RedSocial~ redesSociales
+        -User currentUser
+        +ConnectHub()
+        +addRedSocial(RedSocial) void
+        +getRedesSociales() List~RedSocial~
+        -init() void
+    }
+
+    class AuthenticationService {
+        -DataManager~User~ userController
+        -FileHandler~User~ userDataHandler
+        +AuthenticationService()
+        +login(String, String) LoginResult
+        +createAccount(String, String, Date) User
+        -validateUserData(String, String, Date) void
+    }
+
+    class FileHandler~T~ {
+        -String basePath
+        +FileHandler(String)
+        +save(List~T~) void
+        +load() List~T~
+    }
+
+    class RedSocial {
+        -User user
+        -String NETWORK_NAME$
+        -DataManager~Publication~ publicationController
+        -FileHandler~Publication~ dataHandler
+        -PublicationFactory publicationFactory
+        +RedSocial(String, User)
+        +getName() String
+        +setUser(User) void
+        +publish(PublicationType, String, File...) Publication
+        -showPublications() void
+    }
+
+    class DataManager~T~ {
+        -List~T~ data
+        +DataManager()
+        +setData(List~T~) void
+        +getData() List~T~
+        +addData(T) void
+        +deleteData(int) boolean
+        +findDataById(int) T
+        +getDataCount() int
+        +isEmpty() boolean
+        +clearData() void
+        +existsById(int) boolean
+    }
+
+    class PublicationFactory {
+        +createPublication(PublicationType, User, String, File...) Publication
+    }
+
+    class Publication {
+        -int nextId$
+        -int id
+        -User author
+        -Date dateCreated
+        -Date dateModified
+        -List~Content~ contents
+        -int likes
+        +Publication(User)
+        +addContent(Content) void
+        +getId() int
+        +getAuthor() User
+        +getDateCreated() Date
+        +getContents() List~Content~
+    }
+
+    class Content {
+        <<abstract>>
+        #String type
+        #Date dateCreated
+        #Content(String)
+        +getType() String
+        +getDateCreated() Date
+        +isValid()* boolean
+        +getSize()* long
+    }
+
+    class TextContent {
+        -String text
+        +TextContent(String)
+        +isValid() boolean
+        +getSize() long
+        +getText() String
+    }
+
+    class VideoContent {
+        -File videoFile
+        +VideoContent(File)
+        +isValid() boolean
+        +getSize() long
+    }
+
+    class ImageContent {
+        -File imageFile
+        +ImageContent(File)
+        +isValid() boolean
+        +getSize() long
+    }
+
+    class User {
+        -String username
+        -String passwordHash
+        -Date birthday
+        -List~User~ followers
+        -List~User~ following
+        -Date dateCreated
+        +User(String, String, Date)
+        +validatePassword(String) boolean
+        -hashPassword(String) String
+        +getUsername() String
+        +getBirthday() Date
+        +getFollowers() List~User~
+        +getFollowing() List~User~
+    }
+
+    class LoginResult {
+        -boolean success
+        -User user
+        +LoginResult(boolean, User)
+        +isSuccess() boolean
+        +getUser() User
+    }
+
+    class PublicationType {
+        <<enumeration>>
+        VIDEO
+        IMAGE
+        TEXT
+        VIDEO_WITH_TEXT
+        IMAGE_WITH_TEXT
+    }
+
+    %% Relaciones
+    ConnectHub *-- AuthenticationService : contains
+    ConnectHub o-- RedSocial : manages
+    ConnectHub o-- User : currentUser
+
+    AuthenticationService *-- DataManager : userController
+    AuthenticationService *-- FileHandler : userDataHandler
+    AuthenticationService ..> LoginResult : creates
+    AuthenticationService ..> User : manages
+
+    RedSocial *-- DataManager : publicationController
+    RedSocial *-- FileHandler : dataHandler
+    RedSocial *-- PublicationFactory : publicationFactory
+    RedSocial o-- User : user
+    RedSocial ..> Publication : creates
+
+    PublicationFactory ..> Publication : creates
+    PublicationFactory ..> PublicationType : uses
+    PublicationFactory ..> Content : creates
+
+    Publication *-- Content : contents
+    Publication o-- User : author
+
+    Content <|-- TextContent
+    Content <|-- VideoContent
+    Content <|-- ImageContent
+
+    User o-- User : followers/following
