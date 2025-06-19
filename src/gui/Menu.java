@@ -5,14 +5,16 @@ import javax.swing.*;
 import model.User;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.function.Consumer;
 
 public class Menu extends JFrame {
     private User usuario;
+    private Consumer<Boolean> onChangeUserCallback;
     
-    public Menu(User usuario) {
+    public Menu(User usuario, Consumer<Boolean> callback) {
         this.usuario = usuario;
+        this.onChangeUserCallback = callback;
         initializeComponents();
     }
     
@@ -35,6 +37,9 @@ public class Menu extends JFrame {
         // Panel inferior con botón de salir
         JPanel footerPanel = createFooterPanel();
         add(footerPanel, BorderLayout.SOUTH);
+
+        JPanel footerPanel2 = createFooterPanel();
+        add(footerPanel2, BorderLayout.SOUTH);
     }
     
     private JPanel createHeaderPanel() {
@@ -168,7 +173,23 @@ public class Menu extends JFrame {
         exitButton.setFont(new Font("Arial", Font.BOLD, 14));
         exitButton.setFocusPainted(false);
         exitButton.addActionListener(e -> System.exit(0));
+
+        JButton changeUserButton = new JButton("Cambiar Usuario");
+        changeUserButton.setBackground(new Color(50, 150, 50));
+        changeUserButton.setForeground(Color.WHITE);
+        changeUserButton.setFont(new Font("Arial", Font.BOLD, 14)); 
+        changeUserButton.setFocusPainted(false);
+        changeUserButton.addActionListener(e -> {
+            // Llamar al callback para cambiar de usuario
+            if (onChangeUserCallback != null) {
+                onChangeUserCallback.accept(true);
+            }
+            // Cerrar el menú actual
+            dispose();
+        });
         
+        panel.add(Box.createHorizontalGlue()); // Espacio flexible para alinear a la derecha
+        panel.add(changeUserButton);
         panel.add(exitButton);
         return panel;
     }
