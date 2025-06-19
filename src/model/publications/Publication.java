@@ -14,19 +14,20 @@ import model.content.Content;
  */
 public class Publication implements Identifiable, Serializable {
     private static int nextId = 1;
+    private static final long serialVersionUID = 1L; 
     
     private final int id;
     private final User author;
     private final Date dateCreated;
-    private Date dateModified;
+    private final PublicationType type;
     private List<Content> contents;
     private int likes;
     
-    public Publication(User author) {
+    public Publication(User author, PublicationType type) {
         this.id = nextId++;
         this.author = author;
         this.dateCreated = new Date();
-        this.dateModified = new Date();
+        this.type = type;
         this.contents = new ArrayList<>();
         this.likes = 0;
     }
@@ -34,7 +35,6 @@ public class Publication implements Identifiable, Serializable {
     public void addContent(Content content) {
         if (content != null) {
             contents.add(content);
-            this.dateModified = new Date();
         }
     }
     
@@ -53,6 +53,10 @@ public class Publication implements Identifiable, Serializable {
     public int getId() { 
         return id; 
     }
+
+    public PublicationType getType() { 
+        return type; 
+    }
     
     public User getAuthor() { 
         return author; 
@@ -60,10 +64,6 @@ public class Publication implements Identifiable, Serializable {
     
     public Date getDateCreated() { 
         return new Date(dateCreated.getTime()); 
-    }
-    
-    public Date getDateModified() { 
-        return new Date(dateModified.getTime()); 
     }
     
     public List<Content> getContents() { 

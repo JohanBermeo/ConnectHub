@@ -12,7 +12,7 @@ import model.content.VideoContent;
 public class PublicationFactory {
     
     public Publication createPublication(PublicationType type, User user, String content, File... files) throws Exception {
-        Publication publication = new Publication(user);
+        Publication publication = new Publication(user, type);
     
         switch (type) {
             case VIDEO:
