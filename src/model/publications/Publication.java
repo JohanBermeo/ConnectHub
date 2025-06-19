@@ -3,6 +3,7 @@ package model.publications;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.io.Serializable;
 
 import interfaces.Identifiable;
 import model.User;
@@ -11,7 +12,7 @@ import model.content.Content;
 /**
  * Clase que representa una publicación
  */
-public class Publication implements Identifiable {
+public class Publication implements Identifiable, Serializable {
     private static int nextId = 1;
     
     private final int id;

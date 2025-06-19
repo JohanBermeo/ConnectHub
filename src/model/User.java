@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable; 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,8 +10,8 @@ import interfaces.Identifiable;
 /**
  * Clase User mejorada
  */
-public class User implements Identifiable {
-    private static int nextId = 1;
+public class User implements Identifiable, Serializable { 
+    private static final long serialVersionUID = 1L; 
     
     private final int id;
     private String username;
@@ -21,7 +22,7 @@ public class User implements Identifiable {
     private Date dateCreated;
     
     public User(String username, String password, Date birthday) {
-        this.id = nextId++;
+        this.id = username.hashCode();
         this.username = username;
         this.passwordHash = hashPassword(password);
         this.birthday = new Date(birthday.getTime()); // Copia defensiva
@@ -69,9 +70,13 @@ public class User implements Identifiable {
     public int getId() {
         return id;
     }
-    
-    public String getUsername() { 
-        return username; 
+
+    public boolean idEquals(int id) {
+        return this.id == id;
+    }
+
+    public String getUsername() {
+        return username;
     }
     
     public Date getBirthday() { 
