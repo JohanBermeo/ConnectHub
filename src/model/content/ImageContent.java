@@ -23,7 +23,8 @@ public class ImageContent extends Content {
         return imageFile != null ? imageFile.length() : 0;
     }
     
-    public File getImageFile() {
+    @Override
+    public File getContent() {
         return imageFile;
     }
     

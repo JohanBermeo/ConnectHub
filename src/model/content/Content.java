@@ -1,11 +1,14 @@
 package model.content;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Clase abstracta para el contenido de las publicaciones
  */
-public abstract class Content {
+public abstract class Content implements Serializable { 
+    private static final long serialVersionUID = 1L; 
+
     protected final String type;
     protected final Date dateCreated;
     
@@ -21,6 +24,8 @@ public abstract class Content {
     public Date getDateCreated() { 
         return new Date(dateCreated.getTime()); 
     }
+
+    public abstract Object getContent();
     
     public abstract boolean isValid();
     public abstract long getSize();

@@ -20,8 +20,9 @@ public class TextContent extends Content {
     public long getSize() {
         return text != null ? text.getBytes().length : 0;
     }
-    
-    public String getText() { 
+
+    @Override
+    public String getContent() { 
         return text; 
     }
     

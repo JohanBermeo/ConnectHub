@@ -22,8 +22,8 @@ public class VideoContent extends Content {
     public long getSize() {
         return videoFile != null ? videoFile.length() : 0;
     }
-    
-    public File getVideoFile() {
+    @Override
+    public File getContent() {
         return videoFile;
     }
     
