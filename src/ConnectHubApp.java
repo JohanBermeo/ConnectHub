@@ -2,31 +2,68 @@ import javax.swing.*;
 
 import auth.AuthenticationService;
 import gui.AuthenticationGUI;
+import gui.Menu;
+import model.DataManager;
+import model.FileHandler;
+import model.User;
 
 /**
  * Clase principal para ejecutar la aplicación ConnectHub
  * Punto de entrada del sistema con interfaz gráfica
  */
 public class ConnectHubApp {
-    
+
+    private DataManager<User> userController;
+    private FileHandler<User> userFileHandler;
+    private static AuthenticationService authService;
+    private static User currentUser;
+    private static AuthenticationGUI authGUI;
+
+    /**
+     * Constructor de la aplicación ConnectHub
+     * Inicializa los controladores de datos y el servicio de autenticación
+     */
+    public ConnectHubApp() {
+        // Inicializar el controlador de datos de usuarios
+        this.userController = new DataManager<>();
+        this.userFileHandler = new FileHandler<>("users.dat");
+    }
+
     /**
      * Método principal que inicia la aplicación
      * @param args argumentos de línea de comandos
      */
-    public static void main(String[] args) {
+    public void main() {
                 
         // Crear el servicio de autenticación
-        AuthenticationService authService = null;
         try {
-            authService = new AuthenticationService();
+            authService = new AuthenticationService(userController, userFileHandler);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al iniciar el servicio de autenticación: " + e.getMessage(),
-                                            "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         // Crear y mostrar la interfaz de autenticación
-        AuthenticationGUI authGUI = new AuthenticationGUI(authService);
+        authGUI = new AuthenticationGUI(authService, 
+            (Boolean isLogin, String username) -> callbackAuthentication(isLogin, username));
         authGUI.setVisible(true);
+    }
+
+    private void callbackAuthentication(Boolean isLogin, String username) {
+        if (isLogin) {
+            currentUser = userController.findDataById(username.hashCode());
+            Menu mainMenu = new Menu(currentUser, 
+                (Boolean isChangeUser) -> callbackMenu(isChangeUser));
+            mainMenu.setVisible(true);
+        } 
+    }
+
+    private void callbackMenu(boolean isChangeUser) {
+        if (isChangeUser) {
+            // Cerrar la ventana actual y volver a mostrar la GUI de autenticación
+            authGUI.clearFields();
+            authGUI.setVisible(true);
+            currentUser = null; // Limpiar el usuario actual
+        } 
     }
     
     /**
