@@ -4,18 +4,19 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import auth.AuthenticationService;
-import model.User;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Date;
+import java.util.function.BiConsumer;
+
 
 /**
  * Interfaz gráfica para el servicio de autenticación
  * Maneja tanto el login como el registro de usuarios
  */
 public class AuthenticationGUI extends JFrame {
+
     private AuthenticationService authService;
     private JTextField usernameField;
     private JPasswordField passwordField;
@@ -26,9 +27,28 @@ public class AuthenticationGUI extends JFrame {
     private JButton switchModeButton;
     private JLabel statusLabel;
     private boolean isLoginMode = true;
-    
-    public AuthenticationGUI(AuthenticationService authService) {
+    private boolean isSuccess = false;
+    private String usernameLogin = "";
+
+    /**
+     * Constructor de la interfaz de autenticación
+     * @param authService Servicio de autenticación
+     * @param onCloseCallback Callback que se ejecuta al cerrar la ventana
+     */
+    public AuthenticationGUI(AuthenticationService authService, BiConsumer<Boolean, String> onCloseCallback) {
         this.authService = authService;
+        
+        // Callback para manejar el cierre de la ventana
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (onCloseCallback != null && isSuccess) {
+                    
+                    onCloseCallback.accept(true, usernameLogin);
+                }
+            }
+        });
+
         initializeComponents();
         setupLayout();
         setupEventListeners();
@@ -58,6 +78,8 @@ public class AuthenticationGUI extends JFrame {
         
         // Estado
         statusLabel = new JLabel(" ");
+        statusLabel.setFont(new Font("Arial", Font.PLAIN, 11));
+        statusLabel.setPreferredSize(new Dimension(215, 20));
         statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
         statusLabel.setForeground(Color.RED);
     }
@@ -67,19 +89,18 @@ public class AuthenticationGUI extends JFrame {
         
         // Panel principal
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         GridBagConstraints gbc = new GridBagConstraints();
         
         // Título
         JLabel titleLabel = new JLabel("ConnectHub", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setForeground(new Color(59, 89, 182));
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 3;
         gbc.insets = new Insets(0, 0, 20, 0);
         mainPanel.add(titleLabel, gbc);
         
         // Campo usuario
-        gbc.gridwidth = 2; 
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.gridx = 0; gbc.gridy = 1; 
         gbc.anchor = GridBagConstraints.WEST;
@@ -116,7 +137,7 @@ public class AuthenticationGUI extends JFrame {
         mainPanel.add(switchModeButton, gbc);
         
         // // Estado
-        gbc.gridy = 9; gbc.insets = new Insets(15, 0, 0, 0);
+        gbc.gridy = 9;
         mainPanel.add(statusLabel, gbc);
         
         add(mainPanel, BorderLayout.CENTER);
@@ -158,8 +179,9 @@ public class AuthenticationGUI extends JFrame {
             boolean success = authService.login(username, password);
             if (success) {
                 showStatus("Login exitoso", true);
-                // Abrir interfaz principal
-                openMainInterface(username);
+                isSuccess = true; 
+                usernameLogin = username; 
+                this.dispose();
             } else {
                 showStatus("Credenciales incorrectas", false);
             }
@@ -179,13 +201,12 @@ public class AuthenticationGUI extends JFrame {
         }
         
         try {
-            // Parsear fecha (formato simple para el ejemplo)
             Date birthday = parseBirthday(birthdayStr);
-            User newUser = authService.createAccount(username, password, birthday);
+            authService.createAccount(username, password, birthday);
             showStatus("Cuenta creada exitosamente", true);
             setLoginMode();
         } catch (Exception ex) {
-            showStatus("Error: " + ex.getMessage(), false);
+            showStatus(ex.getMessage(), false);
         }
     }
     
@@ -228,7 +249,7 @@ public class AuthenticationGUI extends JFrame {
         clearFields();
     }
     
-    private void clearFields() {
+    public void clearFields() {
         usernameField.setText("");
         passwordField.setText("");
         birthdayField.setText("");
@@ -240,12 +261,4 @@ public class AuthenticationGUI extends JFrame {
         statusLabel.setForeground(isSuccess ? Color.GREEN : Color.RED);
     }
     
-    private void openMainInterface(String username) {
-        // Crear usuario ficticio para el ejemplo
-        User currentUser = new User(username, "temp", new Date());
-
-        Menu mainMenu = new Menu(currentUser);
-        mainMenu.setVisible(true);
-        this.dispose();
-    }
 }

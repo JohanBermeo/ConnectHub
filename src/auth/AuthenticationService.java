@@ -1,6 +1,7 @@
 package auth;
 
 import java.util.Date;
+
 import java.util.ArrayList;
 
 import model.DataManager;
@@ -12,13 +13,14 @@ import model.User;
  */
 public class AuthenticationService {
     private DataManager<User> userController;
-    private FileHandler<User> userDataHandler;
+    private FileHandler<User> userFileHandler;
     
-    public AuthenticationService() {
-        this.userController = new DataManager<>();
-        this.userDataHandler = new FileHandler<>("users.dat");
+    public AuthenticationService(DataManager<User> userController, FileHandler<User> userFileHandler) {
+        this.userController = userController;
+        this.userFileHandler = userFileHandler;
+
         try {
-            this.userController.setData(userDataHandler.load());
+            this.userController.setData(userFileHandler.load());
         } catch (Exception e) {
             this.userController.setData(new ArrayList<User>());
             throw new RuntimeException("Error al cargar los datos de usuarios", e);
@@ -26,14 +28,14 @@ public class AuthenticationService {
     }
     
     public boolean login(String username, String password) {
-        User user = getUserByUsername(username);
+        User user = userController.findDataById(username.hashCode());
         if (user == null || !user.validatePassword(password)) {
             return false;
         }
         return true;
     }
     
-    public User createAccount(String username, String password, Date birthday) throws Exception {
+    public void createAccount(String username, String password, Date birthday) throws Exception {
         validateUserData(username, password, birthday);
 
         boolean existingUser = userController.existsById(username.hashCode());
@@ -44,25 +46,18 @@ public class AuthenticationService {
         
         User newUser = new User(username, password, birthday);
         userController.addData(newUser);
-        userDataHandler.save(userController.getData());
-        return newUser;
-    }
-    
-    private User getUserByUsername(String username) {
-        for (User user : userController.getData()) {
-            if (user.getUsername().equals(username)) {
-                return user;
-            }
-        }
-        return null;
+        userFileHandler.save(userController.getData());
     }
     
     private void validateUserData(String username, String password, Date birthday) throws Exception {
         if (username == null || username.trim().isEmpty()) {
-            throw new Exception("Username no puede estar vacío");
+            throw new Exception("Usuario no puede estar vacío");
+        }
+        if (userController.existsById(username.hashCode())) {
+            throw new Exception("El nombre de usuario ya está en uso");
         }
         if (password == null || password.length() < 8) {
-            throw new Exception("Password debe tener al menos 8 caracteres");
+            throw new Exception("Contraseña debe ser mayor a 8 caracteres");
         }
         if (birthday == null) {
             throw new Exception("Fecha de nacimiento es requerida");
