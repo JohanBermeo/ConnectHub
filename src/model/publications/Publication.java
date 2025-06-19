@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import interfaces.Identifiable;
 import model.User;
 import model.content.Content;
+import model.interfaces.Identifiable;
 
 /**
  * Clase que representa una publicación

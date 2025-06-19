@@ -1,10 +1,8 @@
-package social;
+package model;
 
 import java.io.File;
 
-import model.DataManager;
-import model.FileHandler;
-import model.User;
+import controller.FileController;
 import model.publications.Publication;
 import model.publications.PublicationFactory;
 import model.publications.PublicationType;
@@ -16,14 +14,14 @@ public class RedSocial {
     private User user;
     private String networkName;
     private DataManager<Publication> publicationsManager;
-    private FileHandler<Publication> dataHandler;
+    private FileController<Publication> dataHandler;
     private PublicationFactory publicationFactory;
     
     public RedSocial(String name, User u) {
         this.networkName = name;
         this.user = u;
         this.publicationsManager = new DataManager<>();
-        this.dataHandler = new FileHandler<>(name + "_publications.dat");
+        this.dataHandler = new FileController<>(name + "_publications.dat");
         this.publicationFactory = new PublicationFactory();
         
         if (u != null) {

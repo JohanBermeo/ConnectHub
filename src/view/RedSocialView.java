@@ -1,11 +1,11 @@
-package gui;
+package view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import model.RedSocial;
 import model.User;
-import social.RedSocial;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +16,7 @@ import java.util.Date;
  * Interfaz gráfica principal de la red social
  * Maneja el feed de publicaciones y la navegación principal
  */
-public class RedSocialGUI extends JFrame {
+public class RedSocialView extends JFrame {
     private User currentUser;
     private RedSocial redSocial;
     private JTextArea feedArea;
@@ -25,7 +25,7 @@ public class RedSocialGUI extends JFrame {
     private JButton profileButton;
     private JLabel userLabel;
     
-    public RedSocialGUI(User currentUser) {
+    public RedSocialView(User currentUser) {
         this.currentUser = currentUser;
         this.redSocial = new RedSocial("ConnectHub", currentUser);
         initializeComponents();
@@ -124,7 +124,7 @@ public class RedSocialGUI extends JFrame {
     }
     
     private void openPublicationFactory() {
-        PublicationFactoryGUI factoryGUI = new PublicationFactoryGUI(this, redSocial);
+        PublicationFactoryView factoryGUI = new PublicationFactoryView(this, redSocial);
         factoryGUI.setVisible(true);
     }
     

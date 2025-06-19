@@ -1,12 +1,12 @@
-package gui;
+package view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import model.RedSocial;
 import model.publications.Publication;
 import model.publications.PublicationFactory;
 import model.publications.PublicationType;
-import social.RedSocial;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,8 +18,8 @@ import java.util.Date;
  * Interfaz gráfica para la creación de publicaciones
  * Utiliza el patrón Factory para crear diferentes tipos de publicaciones
  */
-public class PublicationFactoryGUI extends JDialog {
-    private RedSocialGUI parentGUI;
+public class PublicationFactoryView extends JDialog {
+    private RedSocialView parentGUI;
     private RedSocial redSocial;
     private PublicationFactory factory;
     
@@ -33,7 +33,7 @@ public class PublicationFactoryGUI extends JDialog {
     
     private File selectedFile;
     
-    public PublicationFactoryGUI(RedSocialGUI parent, RedSocial redSocial) {
+    public PublicationFactoryView(RedSocialView parent, RedSocial redSocial) {
         super(parent, "Crear Nueva Publicación", true);
         this.parentGUI = parent;
         this.redSocial = redSocial;

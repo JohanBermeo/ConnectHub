@@ -1,9 +1,9 @@
-package gui;
+package view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import auth.AuthenticationService;
+import controller.AuthenticationController;
 import model.User;
 
 import java.awt.*;
@@ -15,8 +15,8 @@ import java.util.Date;
  * Interfaz gráfica para el servicio de autenticación
  * Maneja tanto el login como el registro de usuarios
  */
-public class AuthenticationGUI extends JFrame {
-    private AuthenticationService authService;
+public class AuthenticationView extends JFrame {
+    private AuthenticationController authService;
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JTextField birthdayField;
@@ -27,7 +27,7 @@ public class AuthenticationGUI extends JFrame {
     private JLabel statusLabel;
     private boolean isLoginMode = true;
     
-    public AuthenticationGUI(AuthenticationService authService) {
+    public AuthenticationView(AuthenticationController authService) {
         this.authService = authService;
         initializeComponents();
         setupLayout();
@@ -243,7 +243,7 @@ public class AuthenticationGUI extends JFrame {
     private void openMainInterface(String username) {
         // Crear usuario ficticio para el ejemplo
         User currentUser = new User(username, "temp", new Date());
-        RedSocialGUI mainGUI = new RedSocialGUI(currentUser);
+        RedSocialView mainGUI = new RedSocialView(currentUser);
         mainGUI.setVisible(true);
         this.dispose();
     }

@@ -1,7 +1,7 @@
 import javax.swing.*;
 
-import auth.AuthenticationService;
-import gui.AuthenticationGUI;
+import controller.AuthenticationController;
+import view.AuthenticationView;
 
 /**
  * Clase principal para ejecutar la aplicación ConnectHub
@@ -27,10 +27,10 @@ public class ConnectHubApp {
                 }
                 
                 // Crear el servicio de autenticación
-                AuthenticationService authService = new AuthenticationService();
+                AuthenticationController authService = new AuthenticationController();
                 
                 // Crear y mostrar la interfaz de autenticación
-                AuthenticationGUI authGUI = new AuthenticationGUI(authService);
+                AuthenticationView authGUI = new AuthenticationView(authService);
                 authGUI.setVisible(true);
             }
         });

@@ -1,21 +1,20 @@
-package auth;
+package controller;
 
 import java.util.Date;
 
 import model.DataManager;
-import model.FileHandler;
 import model.User;
 
 /**
  * Separación de responsabilidades - Autenticación
  */
-public class AuthenticationService {
+public class AuthenticationController {
     private DataManager<User> userController;
-    private FileHandler<User> userDataHandler;
+    private FileController<User> userDataHandler;
     
-    public AuthenticationService() {
+    public AuthenticationController() {
         this.userController = new DataManager<>();
-        this.userDataHandler = new FileHandler<>("users.dat");
+        this.userDataHandler = new FileController<>("users.dat");
     }
     
     public boolean login(String username, String password) {

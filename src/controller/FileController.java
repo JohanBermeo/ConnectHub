@@ -1,4 +1,4 @@
-package model;
+package controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,10 +7,10 @@ import java.util.List;
 /**
  * Manejador de archivos genérico
  */
-public class FileHandler<T> {
+public class FileController<T> {
     private String basePath;
     
-    public FileHandler(String basePath) {
+    public FileController(String basePath) {
         this.basePath = basePath;
     }
     
