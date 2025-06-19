@@ -1,10 +1,9 @@
-package social;
+package model;
 
+// import java.awt.List;
 import java.io.File;
+import java.util.List;
 
-import model.DataManager;
-import model.FileHandler;
-import model.User;
 import model.publications.Publication;
 import model.publications.PublicationFactory;
 import model.publications.PublicationType;
@@ -55,8 +54,8 @@ public class RedSocial {
         return publication;
     }
     
-    public DataManager<Publication> getPublicationsManager() {
-        return publicationsManager;
+    public List<Publication> getPublications() {
+        return publicationsManager.getData();
     }
     
     private void loadUserPublications() {
