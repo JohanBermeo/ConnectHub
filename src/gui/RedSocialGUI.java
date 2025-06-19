@@ -5,11 +5,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import model.User;
-import social.RedSocial;
+import model.RedSocial;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Date;
 
 /**
@@ -19,23 +21,34 @@ import java.util.Date;
 public class RedSocialGUI extends JFrame {
     private User currentUser;
     private RedSocial redSocial;
-    private JTextArea feedArea;
+    private JPanel feedArea;
     private JButton createPostButton;
     private JButton refreshButton;
     private JButton profileButton;
     private JLabel userLabel;
+    private String networkName;
     
-    public RedSocialGUI(User currentUser) {
+    public RedSocialGUI(User currentUser, String networkName, Runnable onCloseCallback) {
         this.currentUser = currentUser;
-        this.redSocial = new RedSocial("ConnectHub", currentUser);
+        this.networkName = networkName;
+        this.redSocial = new RedSocial(networkName, currentUser);
         initializeComponents();
         setupLayout();
         setupEventListeners();
         loadFeed();
+
+        // Cambia el comportamiento de cierre para ejecutar el callback y solo cerrar esta ventana
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent windowEvent) {
+            onCloseCallback.run();
+            }
+        });
     }
     
     private void initializeComponents() {
-        setTitle("ConnectHub - " + currentUser.getUsername());
+        setTitle(networkName + " " + currentUser.getUsername());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -44,10 +57,7 @@ public class RedSocialGUI extends JFrame {
         userLabel = new JLabel("Bienvenido, " + currentUser.getUsername());
         userLabel.setFont(new Font("Arial", Font.BOLD, 16));
         
-        feedArea = new JTextArea();
-        feedArea.setEditable(false);
-        feedArea.setFont(new Font("Arial", Font.PLAIN, 12));
-        feedArea.setBackground(Color.WHITE);
+        feedArea = new JPanel();
         
         createPostButton = new JButton("Crear Publicación");
         createPostButton.setBackground(new Color(59, 89, 182));
@@ -110,17 +120,17 @@ public class RedSocialGUI extends JFrame {
         });
     }
     
-    private void loadFeed() {
-        // Simular carga de publicaciones
-        StringBuilder feed = new StringBuilder();
-        feed.append("=== FEED DE PUBLICACIONES ===\n\n");
-        feed.append("¡Bienvenido a ConnectHub!\n");
-        feed.append("Aquí verás las publicaciones de tu red social.\n\n");
-        feed.append("Para empezar, haz clic en 'Crear Publicación'.\n\n");
-        feed.append("=== Publicaciones Recientes ===\n");
-        // Aquí se cargarían las publicaciones reales desde la base de datos
-        
-        feedArea.setText(feed.toString());
+    public void loadFeed() {
+
+        feedArea.removeAll();
+        feedArea.setLayout(new BoxLayout(feedArea, BoxLayout.Y_AXIS));
+
+        for (var publication : redSocial.getPublications()) {
+            JPanel publicationPanel = PublicationGUI.renderPublication(publication);
+            publicationPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            feedArea.add(publicationPanel);
+            feedArea.add(Box.createVerticalStrut(10));
+        }
     }
     
     private void openPublicationFactory() {
@@ -144,9 +154,4 @@ public class RedSocialGUI extends JFrame {
         JOptionPane.showMessageDialog(this, profileInfo, "Mi Perfil", JOptionPane.INFORMATION_MESSAGE);
     }
     
-    public void updateFeed(String newPublication) {
-        String currentFeed = feedArea.getText();
-        String separator = "=".repeat(50);
-        feedArea.setText(newPublication + "\n" + separator + "\n" + currentFeed);
-    }
 }

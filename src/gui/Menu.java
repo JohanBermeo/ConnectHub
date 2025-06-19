@@ -11,10 +11,22 @@ import java.util.function.Consumer;
 public class Menu extends JFrame {
     private User usuario;
     private Consumer<Boolean> onChangeUserCallback;
+    private RedSocialGUI instagramGUI;
+    private RedSocialGUI tikTokGUI;
+    private RedSocialGUI facebookGUI;
     
     public Menu(User usuario, Consumer<Boolean> callback) {
         this.usuario = usuario;
         this.onChangeUserCallback = callback;
+        this.instagramGUI = new RedSocialGUI(usuario, "Instagram", () -> {
+            this.setVisible(true);
+        });
+        this.tikTokGUI = new RedSocialGUI(usuario, "TikTok", () -> {
+            this.setVisible(true);
+        });
+        this.facebookGUI = new RedSocialGUI(usuario, "Facebook", () -> {
+            this.setVisible(true);
+        });
         initializeComponents();
     }
     
@@ -199,81 +211,17 @@ public class Menu extends JFrame {
      * @param redSocial Nombre de la red social seleccionada
      */
     private void showRed(String redSocial) {
-        // Mostrar mensaje de confirmación
-        String mensaje = "Has seleccionado " + redSocial + "\n" +
-                        "Usuario: " + usuario.getUsername() + "\n" +
-                        "¿Deseas continuar?";
-        
-        int opcion = JOptionPane.showConfirmDialog(
-            this,
-            mensaje,
-            "Acceder a " + redSocial,
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE
-        );
-        
-        if (opcion == JOptionPane.YES_OPTION) {
             // Aquí puedes agregar la lógica específica para cada red social
             switch (redSocial) {
                 case "Instagram":
-                    abrirInstagram();
+                    instagramGUI.setVisible(true);
                     break;
                 case "TikTok":
-                    abrirTikTok();
+                    tikTokGUI.setVisible(true);
                     break;
                 case "Facebook":
-                    abrirFacebook();
+                    facebookGUI.setVisible(true);
                     break;
             }
-        }
-    }
-    
-    private void abrirInstagram() {
-        JOptionPane.showMessageDialog(
-            this,
-            "Abriendo Instagram para " + usuario.getUsername() + "...\n" +
-            "¡Comparte tus mejores momentos!",
-            "Instagram",
-            JOptionPane.INFORMATION_MESSAGE
-        );
-        
-        // Aquí puedes crear y mostrar la ventana de Instagram
-        // Por ejemplo: new Instagram(usuario).setVisible(true);
-        System.out.println("Accediendo a Instagram para usuario: " + usuario.getUsername());
-    }
-    
-    private void abrirTikTok() {
-        JOptionPane.showMessageDialog(
-            this,
-            "Abriendo TikTok para " + usuario.getUsername() + "...\n" +
-            "¡Hora de crear contenido viral!",
-            "TikTok",
-            JOptionPane.INFORMATION_MESSAGE
-        );
-        
-        // Aquí puedes crear y mostrar la ventana de TikTok
-        // Por ejemplo: new TikTok(usuario).setVisible(true);
-        System.out.println("Accediendo a TikTok para usuario: " + usuario.getUsername());
-    }
-    
-    private void abrirFacebook() {
-        JOptionPane.showMessageDialog(
-            this,
-            "Abriendo Facebook para " + usuario.getUsername() + "...\n" +
-            "¡Conecta con tus amigos y familia!",
-            "Facebook",
-            JOptionPane.INFORMATION_MESSAGE
-        );
-        
-        // Aquí puedes crear y mostrar la ventana de Facebook
-        // Por ejemplo: new Facebook(usuario).setVisible(true);
-        System.out.println("Accediendo a Facebook para usuario: " + usuario.getUsername());
-    }
-    
-    /**
-     * Método para mostrar la ventana del menú
-     */
-    public void mostrarMenu() {
-        setVisible(true);
     }
 }

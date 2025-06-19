@@ -3,16 +3,13 @@ package gui;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import model.publications.Publication;
-import model.publications.PublicationFactory;
+import model.RedSocial;
 import model.publications.PublicationType;
-import social.RedSocial;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Date;
 
 /**
  * Interfaz gráfica para la creación de publicaciones
@@ -21,7 +18,6 @@ import java.util.Date;
 public class PublicationFactoryGUI extends JDialog {
     private RedSocialGUI parentGUI;
     private RedSocial redSocial;
-    private PublicationFactory factory;
     
     private JComboBox<PublicationType> typeComboBox;
     private JTextArea contentArea;
@@ -37,7 +33,6 @@ public class PublicationFactoryGUI extends JDialog {
         super(parent, "Crear Nueva Publicación", true);
         this.parentGUI = parent;
         this.redSocial = redSocial;
-        this.factory = new PublicationFactory();
         initializeComponents();
         setupLayout();
         setupEventListeners();
@@ -226,23 +221,13 @@ public class PublicationFactoryGUI extends JDialog {
             PublicationType type = (PublicationType) typeComboBox.getSelectedItem();
             String content = contentArea.getText().trim();
             
-            Publication publication;
             if (selectedFile != null) {
-                publication = redSocial.publish(type, content, selectedFile);
+                redSocial.publish(type, content, selectedFile);
             } else {
-                publication = redSocial.publish(type, content);
+                redSocial.publish(type, content);
             }
-            
-            // Actualizar feed en la interfaz principal
-            String publicationText = String.format(
-                "[%s] %s - %s\n%s",
-                type.toString(),
-                publication.getAuthor().getUsername(),
-                new Date().toString(),
-                content.isEmpty() ? "[Archivo: " + (selectedFile != null ? selectedFile.getName() : "N/A") + "]" : content
-            );
-            
-            parentGUI.updateFeed(publicationText);
+
+            parentGUI.loadFeed();
             
             showStatus("Publicación creada exitosamente", true);
             
