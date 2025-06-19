@@ -1,6 +1,7 @@
 package auth;
 
 import java.util.Date;
+import java.util.ArrayList;
 
 import model.DataManager;
 import model.FileHandler;
@@ -16,6 +17,12 @@ public class AuthenticationService {
     public AuthenticationService() {
         this.userController = new DataManager<>();
         this.userDataHandler = new FileHandler<>("users.dat");
+        try {
+            this.userController.setData(userDataHandler.load());
+        } catch (Exception e) {
+            this.userController.setData(new ArrayList<User>());
+            throw new RuntimeException("Error al cargar los datos de usuarios", e);
+        }
     }
     
     public boolean login(String username, String password) {
@@ -28,13 +35,16 @@ public class AuthenticationService {
     
     public User createAccount(String username, String password, Date birthday) throws Exception {
         validateUserData(username, password, birthday);
+
+        boolean existingUser = userController.existsById(username.hashCode());
         
-        if (getUserByUsername(username) != null) {
+        if (existingUser) {
             throw new Exception("El usuario ya existe");
         }
         
         User newUser = new User(username, password, birthday);
         userController.addData(newUser);
+        userDataHandler.save(userController.getData());
         return newUser;
     }
     

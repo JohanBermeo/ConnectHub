@@ -14,26 +14,19 @@ public class ConnectHubApp {
      * @param args argumentos de línea de comandos
      */
     public static void main(String[] args) {
-        // Ejecutar en el Event Dispatch Thread para thread safety
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // Establecer el Look and Feel del sistema operativo
-                    UIManager.setLookAndFeel(UIManager.getLookAndFeel());
-                } catch (Exception e) {
-                    System.err.println("No se pudo establecer el Look and Feel: " + e.getMessage());
-                    // Continuar con el Look and Feel por defecto
-                }
                 
-                // Crear el servicio de autenticación
-                AuthenticationService authService = new AuthenticationService();
-                
-                // Crear y mostrar la interfaz de autenticación
-                AuthenticationGUI authGUI = new AuthenticationGUI(authService);
-                authGUI.setVisible(true);
-            }
-        });
+        // Crear el servicio de autenticación
+        AuthenticationService authService = null;
+        try {
+            authService = new AuthenticationService();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al iniciar el servicio de autenticación: " + e.getMessage(),
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Crear y mostrar la interfaz de autenticación
+        AuthenticationGUI authGUI = new AuthenticationGUI(authService);
+        authGUI.setVisible(true);
     }
     
     /**

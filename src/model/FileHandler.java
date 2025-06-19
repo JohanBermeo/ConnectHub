@@ -1,34 +1,36 @@
 package model;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Manejador de archivos genérico
  */
-public class FileHandler<T> {
+public class FileHandler<T extends Serializable> { 
     private String basePath;
     
     public FileHandler(String basePath) {
-        this.basePath = basePath;
+        this.basePath = "data\\" + basePath;
     }
     
     public void save(List<T> data) throws Exception {
-        try {
-            // Implementación de guardado
-            // Por ahora es un placeholder
-            System.out.println("Guardando datos en: " + basePath);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(basePath))) {
+            oos.writeObject(data);
         } catch (Exception e) {
             throw new Exception("Error al guardar datos", e);
         }
     }
     
+    @SuppressWarnings("unchecked")
     public List<T> load() throws Exception {
-        try {
-            // Implementación de carga
-            // Por ahora retorna lista vacía
-            System.out.println("Cargando datos desde: " + basePath);
+        File file = new File(basePath);
+        if (!file.exists()) {
+            return new ArrayList<>();
+        }
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(basePath))) {
+            return (List<T>) ois.readObject();
+        } catch (EOFException e) {
             return new ArrayList<>();
         } catch (Exception e) {
             throw new Exception("Error al cargar datos", e);
