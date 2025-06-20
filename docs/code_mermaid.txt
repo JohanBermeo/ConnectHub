@@ -36,6 +36,7 @@ classDiagram
         +setUser(User) void
         +publish(PublicationType, String, File...) Publication
         -showPublications() void
+        +getPublications() List~Publication~
     }
 
     class DataManager~T~ {
@@ -70,6 +71,8 @@ classDiagram
         +getAuthor() User
         +getDateCreated() Date
         +getContents() List~Content~
+        +getLikes() int
+        +getType() PublicationType
     }
 
     class Content {
@@ -89,6 +92,7 @@ classDiagram
         +isValid() boolean
         +getSize() long
         +getText() String
+        +getContent() String
     }
 
     class VideoContent {
@@ -96,6 +100,7 @@ classDiagram
         +VideoContent(File)
         +isValid() boolean
         +getSize() long
+        +getContent() File
     }
 
     class ImageContent {
@@ -103,6 +108,7 @@ classDiagram
         +ImageContent(File)
         +isValid() boolean
         +getSize() long
+        +getContent() File
     }
 
     class User {
@@ -138,6 +144,69 @@ classDiagram
         IMAGE_WITH_TEXT
     }
 
+    class RedSocialGUI {
+        -User currentUser
+        -RedSocial redSocial
+        -JPanel feedArea
+        -JButton createPostButton
+        -JButton refreshButton
+        -JButton profileButton
+        -JLabel userLabel
+        -String networkName
+        +RedSocialGUI(User, String, Runnable)
+        +loadFeed() void
+        -initializeComponents() void
+        -setupLayout() void
+        -setupEventListeners() void
+        -openPublicationFactory() void
+        -showProfile() void
+    }
+
+    class Menu {
+        -User usuario
+        -Consumer<Boolean> onChangeUserCallback
+        -RedSocialGUI instagramGUI
+        -RedSocialGUI tikTokGUI
+        -RedSocialGUI facebookGUI
+        +Menu(User, Consumer<Boolean>)
+        -initializeComponents() void
+        -createHeaderPanel() JPanel
+        -createSocialPanel() JPanel
+        -createSocialNetworkPanel(String, Color, String, ActionListener) JPanel
+        -createFooterPanel() JPanel
+        -showRed(String) void
+    }
+
+    class PublicationFactoryGUI {
+        -RedSocialGUI parentGUI
+        -RedSocial redSocial
+        -JComboBox~PublicationType~ typeComboBox
+        -JTextArea contentArea
+        -JButton selectFileButton
+        -JButton publishButton
+        -JButton cancelButton
+        -JLabel fileLabel
+        -JLabel statusLabel
+        -File selectedFile
+        +PublicationFactoryGUI(RedSocialGUI, RedSocial)
+        -initializeComponents() void
+        -setupLayout() void
+        -setupEventListeners() void
+        -updateFieldsVisibility() void
+        -selectFile() void
+        -createPublication() void
+        -showStatus(String, boolean) void
+    }
+
+    class PublicationGUI {
+        +renderPublication(Publication) JPanel
+        -renderVideoPublication(List~Content~) JPanel
+        -renderImagePublication(List~Content~) JPanel
+        -renderTextPublication(List~Content~) JPanel
+        -renderImageWithTextPublication(List~Content~) JPanel
+        -renderVideoWithTextPublication(List~Content~) JPanel
+    }
+
     %% Relaciones
     ConnectHub *-- AuthenticationService : contains
     ConnectHub o-- RedSocial : manages
@@ -166,3 +235,24 @@ classDiagram
     Content <|-- ImageContent
 
     User o-- User : followers/following
+
+    RedSocialGUI ..> User : context
+    RedSocialGUI o-- RedSocial : manages
+    RedSocialGUI o-- PublicationFactoryGUI : creates
+    RedSocialGUI ..> PublicationGUI : uses
+
+    Menu o-- User : usuario
+    Menu o-- RedSocialGUI : instagramGUI
+    Menu o-- RedSocialGUI : tikTokGUI
+    Menu o-- RedSocialGUI : facebookGUI
+
+    PublicationFactoryGUI o-- RedSocialGUI : parent
+    PublicationFactoryGUI o-- RedSocial : context
+    PublicationFactoryGUI ..> PublicationType : uses
+    PublicationFactoryGUI ..> File : manages
+
+    PublicationGUI ..> Publication : renders
+    PublicationGUI ..> Content : uses
+    PublicationGUI ..> TextContent : renders
+    PublicationGUI ..> ImageContent : renders
+    PublicationGUI ..> VideoContent : renders
